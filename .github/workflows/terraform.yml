@@ -3,7 +3,7 @@ name: Terraform Apply with Retries
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
   HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
