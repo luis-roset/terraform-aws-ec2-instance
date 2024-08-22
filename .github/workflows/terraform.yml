@@ -5,13 +5,15 @@ on:
     branches:
       - main
 
+env:
+  HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+  HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+  HCP_ORGANIZATION_ID: ${{ secrets.HCP_ORGANIZATION_ID }}
+  HCP_PROJECT_ID: ${{ secrets.HCP_PROJECT_ID }}
+  
 jobs:
   terraform:
     runs-on: ubuntu-latest
-
-    env:
-      HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
-      HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
 
     steps:
     - name: Checkout code
