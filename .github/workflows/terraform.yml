@@ -1,0 +1,48 @@
+name: Terraform Apply with Retries
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+      HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+
+    - name: Terraform Apply with Retries
+      id: apply
+      run: |
+        max_retries=3
+        count=0
+        until [ $count -ge $max_retries ]
+        do
+          terraform apply -auto-approve tfplan && break
+          count=$((count+1))
+          echo "Retrying terraform apply... ($count/$max_retries)"
+          sleep 10
+        done
+      #env:
+      #  TF_VAR_example: ${{ secrets.TF_VAR_EXAMPLE }}
+
+    - name: Post Apply Actions
+      if: steps.apply.outcome == 'success'
+      run: echo "Terraform apply succeeded!"
